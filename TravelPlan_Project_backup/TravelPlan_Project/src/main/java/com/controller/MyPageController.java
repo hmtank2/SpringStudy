@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dto.BoardDTO;
 import com.dto.MemberDTO;
@@ -54,20 +55,20 @@ public class MyPageController {
 	  updatedDTO.setUserID(currentDTO.getUserID());    //currentDTO에서 가져온 정보를 updatedDTO에 업데이트
 	  service.memberUpdate(updatedDTO); //updatedDTO를 사용하여 회원 정보 업데이트
 	  session.setAttribute("loginInfo", updatedDTO);   //수정된 정보를 세션에 다시 저장
-	  
 	  return "redirect:memberInfo"; // 수정 후 회원 정보 페이지로 이동해 업데이트 된 회원 정보 확인
 	}
 	
 	// 일정보관함
-	@GetMapping("/myPlan")
+	@GetMapping("/travelList")
 	public String myPlan(HttpSession session, Model m) {
-		MemberDTO dto = (MemberDTO)session.getAttribute("login");
-		String userID = dto.getUserID();
-		List<PlanDTO> planList = service.myPlan(userID);
-		m.addAttribute("planList", planList);
-		
-		return "myPlan";
-	}
+		MemberDTO dto = (MemberDTO) session.getAttribute("loginInfo");
+		if (dto != null) { // Null 체크를 수행
+			String userID = ((MemberDTO) session.getAttribute("loginInfo")).getUserID();
+		    List<TravelDTO> travelList = service.travel(userID);
+		    m.addAttribute("travelList", travelList);
+		}
+	    return "mypage/travelList";
+	}	
 	
 	// 좋아요 목록
 		@GetMapping("/LikeList")
@@ -83,19 +84,27 @@ public class MyPageController {
 		}
 	
 	// 내가 쓴 글 목록
-		@GetMapping("/WriteList")
+		@GetMapping("/writeList")
 		public String writeList(HttpSession session ,Model m) {
-			MemberDTO dto = (MemberDTO)session.getAttribute("login");
-			String userid = dto.getUserID();
+			//MemberDTO dto = (MemberDTO)session.getAttribute("login");
+			//String userid = dto.getUserID();
+			MemberDTO dto = (MemberDTO)session.getAttribute("loginInfo");
+			String userid = ((MemberDTO) session.getAttribute("loginInfo")).getUserID();
+			
+			System.out.println(userid);
+			System.out.println("===========================");
+			if (userid==null) {
+				System.out.println("로그인 안돼서 그럼");
+				}
 			//List<TravelDTO> wDTOList = service.writeList(userid); //이건 여행계획
 			List<BoardDTO> wDTOList = service.writeList(userid);
 			//모델저장
 			m.addAttribute("wDTOList",wDTOList);
 			
-			return "writeList";
+			return "mypage/writeList";
 		}
 		
-	
+		
 		/*
 		 * // 세션을 생성하기 전에 기존의 세션 파기
 	        httpServletRequest.getSession().invalidate();
