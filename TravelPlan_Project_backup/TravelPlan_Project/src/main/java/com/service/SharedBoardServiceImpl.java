@@ -9,7 +9,7 @@ import com.dao.SharedBoardDAO;
 import com.dto.MemberDTO;
 import com.dto.PlanDTO;
 import com.dto.SharedBoardDTO;
-import com.dto.TravelDTO;
+import com.dto.TravelListDTO;
 
 @Service
 public class SharedBoardServiceImpl implements SharedBoardService {
@@ -32,8 +32,8 @@ public class SharedBoardServiceImpl implements SharedBoardService {
 	}
 
 	@Override
-	public TravelDTO findOne(int TravelID) {
-		TravelDTO dto = sharedBoardDAO.findOne(TravelID);
+	public TravelListDTO findOne(int TravelID) {
+		TravelListDTO dto = sharedBoardDAO.findOne(TravelID);
 		return dto;
 	}
 

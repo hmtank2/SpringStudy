@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.dto.MemberDTO;
 import com.dto.PlanDTO;
 import com.dto.SharedBoardDTO;
-import com.dto.TravelDTO;
+import com.dto.TravelListDTO;
 
 @Repository
 public class SharedBoardDAO {
@@ -40,7 +40,7 @@ public class SharedBoardDAO {
 	}
 
 	////(공유) 일정 자세히보기
-	public TravelDTO findOne(int travelID) {
+	public TravelListDTO findOne(int travelID) {
 		return session.selectOne("SharedBoardMapper.findOne", travelID);
 	}
 	//(공유) 일정 자세히보기 - 여행일정들 보기.

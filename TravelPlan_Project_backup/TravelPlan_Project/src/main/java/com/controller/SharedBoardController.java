@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.dto.MemberDTO;
 import com.dto.PlanDTO;
 import com.dto.SharedBoardDTO;
-import com.dto.TravelDTO;
+import com.dto.TravelListDTO;
 import com.dto.UserLikeDTO;
 import com.service.MyPageService;
 import com.service.SharedBoardService;
@@ -51,7 +51,7 @@ public class SharedBoardController {
 
 		// List<UserLikeDTO> ulDTOList = service.userLikeList(userid);
 		//트랜잭션 필요 할 수 있음
-		TravelDTO dto = service.findOne(TravelID);//리퀘스트에 travelid 어떻게 넣을 건가
+		TravelListDTO dto = service.findOne(TravelID);//리퀘스트에 travelid 어떻게 넣을 건가
 		List<PlanDTO> planDto = service.selectPlanList(TravelID);//리퀘스트에 travelid 어떻게 넣을 건가
 		m.addAttribute("TravelDTO", dto);//dto
 		m.addAttribute("PlanDTOList", planDto);//dto
