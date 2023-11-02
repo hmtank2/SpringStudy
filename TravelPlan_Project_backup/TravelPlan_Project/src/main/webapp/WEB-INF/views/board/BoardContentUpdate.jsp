@@ -5,6 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<title>여담: 공유 일정 상세보기</title>
 <title>게시글 수정하기</title>
 <!-- 합쳐지고 최소화된 최신 CSS -->
 <link rel="stylesheet"
@@ -31,13 +32,20 @@
 				</div>
 			</div>
 			<div class="form-group">
+				
 				<label for="title" class="col-sm-2 control-label">제목</label>
 				<div class="col-sm-10">
 					<input type="text" class="form-control" name="title"
-						value="${content.title }">
+						value="${content.title}">
+				</div>
+				
+				<label for="title" class="col-sm-2 control-label">글번호</label>
+				<div class="col-sm-10">
+					<input type="hidden" name="contentNum" value="${content.contentNum}">
+					
 				</div>
 			</div>
-			
+
 			<div class="form-group">
 				<label for="content" class="col-sm-2 control-label">내용</label>
 				<div class="col-sm-10">

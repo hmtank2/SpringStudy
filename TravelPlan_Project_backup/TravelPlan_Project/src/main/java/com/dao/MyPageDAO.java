@@ -1,15 +1,18 @@
 package com.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dto.BoardDTO;
 import com.dto.MemberDTO;
 import com.dto.PlanDTO;
-import com.dto.TravelDTO;
+import com.dto.TravelListDTO;
 import com.dto.UserLikeDTO;
 
 @Repository
@@ -32,9 +35,9 @@ public class MyPageDAO {
 	}
 	
 	//일정보관함
-	public List<TravelDTO> travel(String userID) {
-		return session.selectList("MyPageMapper.travel", userID);
-	}
+//	public List<TravelDTO> travel(String userID) {
+//		return session.selectList("MyPageMapper.travel", userID);
+//	}
 	
 	//내가 찜 한 글 목록
 	public List<UserLikeDTO> userLikeList(String userID) {
@@ -47,5 +50,46 @@ public class MyPageDAO {
 		return session.selectList("MyPageMapper.writeList", userID);
 	}
 	
+	//회원 탈퇴하기
+	//member 테이블에서 레코드 삭제
+	public void memberDelete(MemberDTO dto) {
+		session.delete("MyPageMapper.memberDelete", dto);
+	}
 	
+	//travel 테이블에서 레코드 삭제
+    public void deleteTravelRecordsByUserId(String userID) {
+        session.delete("MyPageMapper.deleteTravelRecordsByUserId", userID);
+    }
+    
+    //Board 테이블에서 레코드 삭제
+    public void deleteBoardRecordsByUserId(String userID) {
+    	session.delete("MyPageMapper.deleteBoardRecordsByUserId", userID);
+    }
+    
+    //Comments 테이블에서 레코드 삭제
+    public void deleteCommentsRecordsByUserId(String userID) {
+    	session.delete("MyPageMapper.deleteCommentsRecordsByUserId", userID);
+    }
+    
+    //SharedTravel 테이블에서 레코드 삭제
+    public void deleteSharedTravelRecordsByUserId(String userID) {
+    	session.delete("MyPageMapper.deleteSharedTravelRecordsByUserId", userID);
+    }
+    
+    //CommentsOfTravel 테이블에서 레코드 삭제
+    public void deleteCommentsOfTravelRecordsByUserId(String userID) {
+    	session.delete("MyPageMapper.deleteCommentsOfTravelRecordsByUserId", userID);
+    }
+    
+    //UserLike 테이블에서 레코드 삭제
+    public void deleteUserLikeRecordsByUserId(String userID) {
+    	session.delete("MyPageMapper.deleteUserLikeRecordsByUserId", userID);
+    }
+    
+	//비밀번호 체크
+	public int checkPw(MemberDTO dto) {
+		int result = session.selectOne("MyPageMapper.checkPw", dto);
+		return result;
+	}
+
 }
