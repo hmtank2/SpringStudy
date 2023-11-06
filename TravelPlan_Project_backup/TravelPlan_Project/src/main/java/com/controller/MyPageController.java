@@ -28,9 +28,9 @@ public class MyPageController {
 	MyPageService service;
 	
 	// 마이페이지
-	@GetMapping("/mypage")
+	@GetMapping("/loginCheck/mypage")
 	public String mypage() {
-		return "mypage/mypage";
+		return "mypage";
 	}
 	
 	// 회원 정보 확인
