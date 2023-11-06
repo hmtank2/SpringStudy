@@ -29,7 +29,7 @@ public class SharedBoardController {
 	public String SharedBoard(HttpSession session, Model m) {
 		List<SharedBoardDTO> SbDTOList = service.SharedBoard();
 		m.addAttribute("SbDTOList", SbDTOList);
-		return "SharedBoard/template";
+		return "SharedBoard/SharedTravelBoard";
 	}
 
 	// 일정 공유 게시판 자세히보기
@@ -46,14 +46,6 @@ public class SharedBoardController {
 	 * 일정공유 게시판 자세히 보기 SharedBoardDTO TCommentDTO
 	 * 
 	 */
-	
-	//  게시판 화면 템플릿
-		@GetMapping("/boardtemplate")
-		public String boardtemplate(HttpSession session, Model m) {
-			
-			return "SharedBoard/boardtemplate";
-		}
-	
 	@GetMapping("/retrieve")
 	public String findOne(@RequestParam int TravelID, Model m) {
 
@@ -63,7 +55,7 @@ public class SharedBoardController {
 		List<PlanDTO> planDto = service.selectPlanList(TravelID);//리퀘스트에 travelid 어떻게 넣을 건가
 		m.addAttribute("TravelDTO", dto);//dto
 		m.addAttribute("PlanDTOList", planDto);//dto
-		return "SharedBoard/boardtemplate";
+		return "SharedBoard/SharedTravelRetrieve";
 	}
 
 	// 여행계획(내 보관함)
