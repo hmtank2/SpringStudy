@@ -11,11 +11,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    
+    <link rel="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"> <!-- 폰트어썸 코드 -->
     <title>여담: 회원가입</title>
     
     <style >
-    	* { box-sizing:border-box; }
+    	* { box-sizing:border-box; font-family: 'SUIT-Medium'; }
 
         form {
             width:700px;
@@ -117,6 +117,26 @@
             color:red;
             margin-bottom: 1px;
         }
+        #pwcheck{
+        	font-size: 13px;
+        	color:red;
+        }
+        div.pw{
+        	position: relative;
+        }
+        div.pw input{
+        	width: 300px;
+        	height:40px;
+        	text-indent:10px;
+        }
+       
+        div.pw i{
+        	position:absolute;
+        	left: 88%;
+        	top: 10px;
+        	color: #3A3A3A;
+        }
+     
     </style>
     
 </head>
@@ -135,7 +155,10 @@
     </div>
 	</div>
     <label for="">비밀번호</label>
-    <input class="input-field" type="text" name="passwd" placeholder="7자 이상의 문자">
+    <div class="pw">
+    <input class="input-field" type="password" name="passwd" id="passwd" placeholder="7자 이상의 문자">
+    <i class="fas fa fa-eye fa-lg"></i>
+    </div>
     <label for="">이름</label>
     <input class="input-field" type="text" name="name" placeholder="홍길동">
     <label for="">이메일</label>
@@ -152,22 +175,43 @@
 	<input class="input-field" type="text" name="addr2" id="sample4_jibunAddress" placeholder="지번주소">
     <span id="guide" style="color:#999"></span>
     <label for="">전화번호</label>
-    <input class="input-field" type="text" name="phone" placeholder="010-1234-5678">
+    <input class="input-field" type="text" name="phone" placeholder="01012341234"> 
     <button type="submit" id="sbtn">회원 가입</button>
    </form> 
    <script>
-       function formCheck(frm) {  // 유효성 검사
+	   // 아이디값 입력시 result값 초기화
+	   $("#userID").on("keydown", function() {
+			   $("#result").text("");
+	   });
+	   
+	   // 유효성 검사
+       function formCheck(frm) {
             let msg ='';
-
+            
             if(frm.userID.value.length<7) {
                 setMessage('id의 길이는 7자 이상이어야 합니다.', frm.userID);
                 return false;
             }
-
+            if($("#result").text().length == 0) {
+            	setMessage('id 중복 여부를 확인해 주세요.', frm.userID);
+				return false;
+			}
+            if($("#result").text() == '중복된 아이디입니다.') {
+            	setMessage('중복된 아이디는 사용할 수 없습니다.', frm.userID);
+				return false;
+			}
             if(frm.passwd.value.length<7) {
                 setMessage('pwd의 길이는 7자 이상이어야 합니다.', frm.passwd);
                 return false;
             }
+ //           if($("#pwcheck").text() == '비번 불일치') {
+ //               setMessage('비밀번호가 일치되어야합니다.', frm.passwd);
+ //               return false;
+ //           }
+ //           if($("#pwcheck").text().length == 0) {
+ //               setMessage('비밀번호가 일치 여부를 확인해 주세요.', frm.passwd);
+ //               return false;
+ //           }
             if(frm.name.value.length ==0){
             	setMessage('이름이 누락되었습니다.', frm.name);
             	return false;
@@ -192,7 +236,9 @@
             	setMessage('전화번호는 숫자만 입력가능합니다.', frm.phone);
             	return false;
             }
-           return true;
+            
+            document.getElementById("sbtn").disabled = true; // 버튼 비활성화 - 한번만 눌러지도록
+           	return true;
        }
 
        function setMessage(msg, element){
@@ -204,16 +250,28 @@
        }
        
        // 비번 일치/불일치 확인 작업
-       $(document).ready(function(){
-       $("#passwd2").on("keyup", function(){
-			var passwd = $("#passwd").val();
-			var passwd2 = $("#passwd2").val();
-			var msg="비번 일치";
-			if(passwd != passwd2){
-				msg="비번 불일치";
-			}
-			$("#idcheck").text(msg);
-		});
+      $(document).ready(function(){
+//      $("#passwd2").on("keyup", function(){
+    //	   console.log("keyup");
+//			var passwd = $("#passwd").val();
+//			var passwd2 = $("#passwd2").val();
+//			var msg="비번 일치";
+//			if(passwd != passwd2){
+//				msg="비번 불일치";
+//			}
+//			$("#pwcheck").text(msg);
+//		});
+  		// 비밀번호 확인하기
+  		$('.pw i').on('click',function(){
+  			$('input').toggleClass('active');
+  			if($('input').hasClass('active')){
+  				$(this).attr('class',"fas fa fa-eye-slash fa-lg")
+  				.prev('input').attr('type',"text");
+  			}else{
+  				$(this).attr('class',"fas fa fa-eye fa-lg")
+  	            .prev('input').attr('type','password');
+  			}
+  		});
        
        // id 중복 체크
        $("#idDuplicatedcheck").on("click",function(){
@@ -237,6 +295,9 @@
 
              });
 		});
+       
+       // submit 버튼 한번 클릭하면 비활성화
+       
        });
    </script>
   <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>

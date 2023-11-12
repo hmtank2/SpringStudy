@@ -32,30 +32,148 @@
 	
 	<!-- day 버튼 이벤트-->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-    function createButtons(dayNum) {
-        for (var trCnt = 1; trCnt <= dayNum; trCnt++) {
-            if (trCnt < 10) {
-                var innerHtml = '<tr><td style="text-align:center;">';
-                innerHtml += '<button class="bttn list-bttn" id="daybtn' + trCnt + '" ';
-                innerHtml += 'value="daybtn' + trCnt + '"  onclick="javascript: day_filter(value);">DAY' + trCnt + '</button></td></tr>';
-                $('#myTable > tbody:last').append(innerHtml);
-            } else {
-                alert("최대 9일까지만 생성 가능합니다.");
-                return false;
-            }
-        }
-    }
+    
+    <style>
+    .plan-days {
+    background-color: #B7E1F5;
+    border: none;
+    cursor: pointer;
+    padding: 25px 0;
+    font-size: 22px;
+    border-bottom: 1px solid white;
+    width: 100%;
+    margin-bottom: 0px;
+    color: #0c3b54;
+    font-family: 'SUIT-Bold';
+}
 
-    // PlanDTO의 day_num 값을 가져와서 버튼을 생성
-    var dayNum = ${planDTO.day_num}; // PlanDTO의 day_num 값
-    createButtons(dayNum);
+    </style>
+    
+    <script>
+    var markers = []; // 마커 배열 (전역 변수)
+    
+    $(function(){
+    	 var obj = {};  // day버튼
+    	    <c:forEach items="${planList}" var="plan" varStatus="status">
+    	        if(!obj["${plan.day_num}"]){
+    	            obj["${plan.day_num}"] = [];  //day_num에 해당하는 키 없을 시, 새로운 배열 생성하여 obj 객체에 담음
+    	        }
+    	        obj["${plan.day_num}"].push({   //day_num을 키로 하고 해당 날짜에 대한 일정 목록을 값으로 가짐
+    	            item: "${plan.item}",
+    	            item_add: "${plan.item_add}",
+    	            time: "${plan.time}",
+    	            time: "${plan.time}",
+    	            mapx: "${plan.mapx}",
+    	            mapy: "${plan.mapy}",
+    	            idx: "${plan.idx}"
+    	        })
+    	    </c:forEach>
+
+    	    var days = '';  //days 초기화. 일정 버튼 저장할 HTML 문자열 가짐.
+    	    
+    	    Object.keys(obj).forEach(function(e){  //obj객체의 키를 반복하면서 day_num에 대한 버튼 생성
+    	    	 //TODO: html 수정  
+    	        days += '<button class="btn btn-primary plan-days" data-day='+e+'>DAY '+e+'</button>';
+    	    });
+
+    	    $('#test-days tbody').html(days);  //test-days 테이블의 tbody에 일정 버튼 추가
+    	    
+    	    	// 마커 초기화
+	 	    	clearMarkers(); 
+    	    
+    	  	//-----------plan-days 버튼 클릭 이벤트 시작------------
+    	  	// 버튼 클릭시 해당 날짜의 일정 항목이 test-plan-item에 동적으로 생성됨
+    	    $(".plan-days").on("click", function(){  
+    	    	var day = $(this).data("day");
+    	    	var planList = obj[day];
+    	    	
+    	    	$("#test-plan-item").empty();
+    	    	
+    	    	// 선택한 day에 속하는 세부일정의 위치 정보 저장
+    	    	 var dayPlans = [];
+    	    	    planList.forEach(function(plan) {
+    	    	      dayPlans.push({ mapx: plan.mapx, mapy: plan.mapy });
+    	    	    
+    	    		// TODO html 수정
+    			    var html = ' <a href="#" class="list-group-item list-group-item-action py-3 lh-sm" aria-current="true">';
+    			    html+='<div class="d-flex w-100 align-items-center justify-content-between">';
+    			    html+=' <p> <strong class="mb-1">'+plan.item+'</strong> </p>';
+    			    html+='<small class="text-body-secondary">'+plan.time+'</small>';
+    			    html+='</div>';
+    			    html+='<div class="col-10 mb-1 small">'+plan.item_add+'</div>';
+    			    html+='</a>';
+    		
+    	    		$("#test-plan-item").append(html);  //html을 추가하여 세부 일정에 표시
+    	    	
+    	    		// 테스트 코드
+//     	    		console.log(plan.item);
+//   	    		console.log(plan.mapx);
+//    	    		console.log(plan.mapy); 
+    	    	});
+    	    
+    	    		// 마커 추가
+    	    		addMarkers(dayPlans);
+    	    		
+    	    });
+    	    
+    	    //-----------plan-days 버튼 클릭 이벤트 끝------------
+    	    
+    	    
+    	    // 초기화 함수
+    	    function clearMarkers() {
+    	        markers.forEach(function(marker) {
+    	            marker.setMap(null);
+    	        });
+    	        markers = [];
+    	    }
+    	    	
+    	    	
+    	    });  
+    	  //---------------------------------- function() 끝 ----------------------------------
+    	   
+    	    // 마커 추가 함수
+    	    function addMarkers(dayPlans) {
+    		  
+    	    	// 마커 이미지의 이미지 크기입니다
+    	    	var imageSize = new kakao.maps.Size(50, 50);
+
+    	    	// 마커 이미지를 생성합니다
+    	    	var imageSrc = 'https://cdn-icons-png.flaticon.com/512/5860/5860579.png'; // 사용할 마커 이미지 파일 경로를 지정해야 합니다
+    	    	var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+    	          // Kakao Map
+    	          kakao.maps.load(function() {
+    	            var container = document.getElementById('map');
+    	            var options = {
+    	              center: new kakao.maps.LatLng(dayPlans[0].mapy, dayPlans[0].mapx),  //첫 번째 마커 위치를 기준으로 중심 위치 설정
+    	              level: 3
+    	            };
+
+    	            var map = new kakao.maps.Map(container, options);
+
+	    	        // 마커 생성하고 추가
+	    	        dayPlans.forEach(function(plan) {
+		    	        var mapx = plan.mapx;
+		    	        var mapy = plan.mapy;
+	    	          
+	    	            // 마커 생성
+	    	            var markerPosition = new kakao.maps.LatLng(mapy, mapx);
+	    	            var marker = new kakao.maps.Marker({
+	    	                position: markerPosition,
+	    	                image: markerImage // 마커 이미지 설정
+	    	            });
+	
+	    	            // 지도에 마커 출력
+	    	            marker.setMap(map);
+	    	            markers.push(marker);
+	    	            
+	    	            // 테스트 코드
+	    	            console.log(markers);
+	    	          });
+	    	      });
+    	      }
+
 	</script>
-	
-	
-	
-	
-	
 	
 </head>
 <body style="height: 100%">
@@ -91,17 +209,7 @@
 	<div class="d-flex flex-column flex-shrink-0 bg-body-tertiary" style="width: 140px;">
 		<div class="plan-daysbox nav nav-pills nav-flush flex-column mb-auto text-center">
 			<div class="plan-daysboxtitle">일정</div>
-			
-			<!-- 유저가 저장한 만큼 day 버튼 나오게 해라 -->
-			 <%-- <c:forEach var="day" begin="1" end="${planDTO.day_num}"> 
-       			 <button type="button" class="btn btn-primary">Day ${day}</button>
-       		</c:forEach> --%>		
-       		<c:forEach var="day" begin="1" end="${planDTO.day_num}">
-            	<button class="btn btn-primary" onclick="day_filter(${day})">DAY ${day}</button>
-       		 </c:forEach>
-       		
-       		
-				<div class="select-job-items1 nav-item">
+				<div id="test-days" class="select-job-items1 nav-item">
 					<div style="text-align: -webkit-center;">
 						<table id="myTable" class="table">
 							<thead>
@@ -110,9 +218,7 @@
 						</table>
 					</div>
 				</div>
-	
 			<input type="hidden" id="day_hidden" value="0">
-	
 		</div>
 	</div>
 	<div class="b-example-divider b-example-vr"></div>
@@ -126,23 +232,15 @@
 		    <span class="fs-5 fw-semibold">세부 일정</span>
 		  </div>
 		  
-
-		      
 		  <!-- 세부 일정 : c:foreach 사용하기  : 일정만들기 토대로 추후 다시 수정 / 일정마다 누르면 지도 표시되게 수정하기 -->
-		  <div class="list-group list-group-flush border-bottom scrollarea">
+		  <div id="test-plan-item" class="list-group list-group-flush border-bottom scrollarea">
 		    <a href="#" class="list-group-item list-group-item-action py-3 lh-sm" aria-current="true">
 		      <div class="d-flex w-100 align-items-center justify-content-between">
-		      
-		      
 		       <p> <strong class="mb-1">${planDTO.item}</strong> </p>
-		        
 		        <small class="text-body-secondary">${planDTO.time}</small>
 		      </div>
 		      <div class="col-10 mb-1 small">${planDTO.item_add}</div>
 		    </a>
-		
-		   
-		
 		  </div>
 		</div>
 
@@ -153,7 +251,7 @@
 		<div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary" style="width: 78%;">
 			<!-- 지도API -->
 			<div id="map" style="width:100%;height:100%;"></div>
-			<script src="js/kakaoMap2.js"></script>
+			<script src="../js/kakaoMap2.js"></script>
 	    </div>
 	<!-- 지도 끝 -->		
 		

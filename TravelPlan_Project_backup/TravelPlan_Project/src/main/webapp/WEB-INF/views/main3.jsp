@@ -13,10 +13,184 @@
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
     crossorigin="anonymous">
 </script>
-<title>main3</title>
-<style>
+<script>
+	function service(){ // 모달창에서 로그인 되면 넘어가게
+		let signIn = "${loginInfo}";
+		if(signIn == ""){
+			alert("로그인 후 이용하실 수 있는 페이지입니다.");
+			location.href="loginForm";
+		}else{
+			openBtn();
+		}
+	}
+
 	
+	function openBtn(region) {
+		document.getElementById('modalContainer').classList.remove('hidden');
+		$("#region").val(region);
+		
+	}
+	function closeBtn() {
+		event.preventDefault();
+		document.getElementById('modalContainer').classList.add('hidden');	
+		console.log("닫기 버튼 누름");
+	}
+</script>
+<style>
+/* 모달  */
+      #modalOpenButton, #modalCloseButton {
+		  cursor: pointer;
+		}
+		
+		#modalContainer {
+		  width: 100%;
+		  height: 100%;
+		  position: fixed;
+		  top: 0;
+		  left: 0;
+		  display: flex;
+		  justify-content: center;
+		  align-items: center;
+		  background: rgba(0, 0, 0, 0.5);
+		}
+		
+		#modalContent {
+		  position: absolute;
+		  background-color: #ffffff;
+		  width: 500px;
+		  height: 300px;
+		  padding: 15px;
+		}
+		
+		#modalContainer.hidden {
+		  display: none;
+		}
+		
+ 		/* 여행정보창  */
+		.title {
+			width: 70px;
+		    height: 50px;
+		    top:20px;
+		    left:27px;
+		    font-family: 'SUIT-Bold';
+		}
+		#travelTitle{
+			width: 250px;
+		    height: 34px;
+		    left:110px;
+		    top:10px;
+		    border-top: none;
+		    border-left: none;
+		    border-right: none;
+		    border-bottom : 1px solid black;
+		    font-family: 'SUIT-Medium';
+		    padding-left: 14px;
+		}
+		#SDate{
+			width: 110px;
+		    height: 35px;
+		    left:500px;
+		    top:10px;
+		    border-top: none;
+		    border-left: none;
+		    border-right: none;
+		    border-bottom : 1px solid black;
+		    text-align: center;
+	    }
+		#EDate{
+			width: 110px;
+		    height: 35px;
+		    left:786px;
+		    top:10px;
+		    border-top: none;
+		    border-left: none;
+		    border-right: none;
+		    border-bottom : 1px solid black;
+		    text-align: center;
+	    }
+	    .calendar{
+			right:1100px;
+			top: 0px
+		}
+		.calendar_sdate{
+			left:400px;
+			top:20px;
+			font-family: 'SUIT-Bold';
+		}
+		.calendar_edate{
+			left:682px;
+			top:20px;
+			font-family: 'SUIT-Bold';
+		}
+		#btnList {
+			float: right;
+		}
+		/* 게시판 인기글 */
+* {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    a {
+      text-decoration: none;
+      color: black;
+    }
+    input {
+      border: none;
+      outline: none;
+    }
+    .board-container {
+      width: 60%;
+      height: 500px;
+      margin: 0 auto;
+      font-family: 'SUIT-Medium';
+      /* border: 1px solid black; */
+    }
+    
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      border-top: 2px solid rgb(39, 39, 39);
+    }
+    tr:nth-child(even) {
+      background-color: #f0f0f070;
+    }
+    th,
+    td {
+      width:300px;
+      text-align: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    td {
+      color: rgb(53, 53, 53);
+    }
+    .no      { width:150px;}
+    .title   { width:50%;  }
+    td.title   { text-align: left;  }
+    td.writer  { text-align: left;  }
+    td.viewcnt { text-align: right; }
+    td.title:hover {
+      text-decoration: underline;
+    }
+    
+    .btn-write {
+      background-color: rgb(236, 236, 236); /* Blue background */
+      border: none; /* Remove borders */
+      color: black; /* White text */
+      padding: 6px 12px; /* Some padding */
+      font-size: 16px; /* Set a font size */
+      cursor: pointer; /* Mouse pointer on hover */
+      border-radius: 5px;
+      margin-left: 30px;
+    }
+    .btn-write:hover {
+      text-decoration: underline;
+    }
+  /* 게시판 인기글 끝 */
 </style>
+<title>여행을 담다, 여담</title>
+
 </head>
 <body>
 <jsp:include page="common/top.jsp" flush="true" /><br>
@@ -69,8 +243,247 @@
       </b></p>
   </div>
 
+<!-------------일정 만들기 시작 ------------ -->
+      <div class="album py-5 bg-white">
+        <div class="container">
+          
+          <!-- 글 -->
+          <div class="py-5 text-center container col-lg-6 col-md-8 mx-auto">
+              <h3 class="fw-bold">어디로 떠날까요? 🚀</h3>
+              <h5>여행 목적지를 선택해주세요.</h5>
+          </div>
+
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3"> <!-- row-cols-**:작아지면 1개 좀 커지면 2개, 중간부터 5개씩 카드 위치함 / g:카드간 간격 -->
+            <!-- card 1 -->
+            <a style="text-decoration: none; color: black;" onclick="service(); openBtn('seoul')">
+              <div class="col">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://www.agoda.com/wp-content/uploads/2019/03/Seoul-attractions-Changdeokgung.jpg">
+                  <div class="card-body">
+                      <p class="card-text text-center" style="font-size: large;"><b>서울</b></p>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- card 2 -->
+            <a style="text-decoration: none; color: black;" onclick="service(); openBtn('incheon')">
+              <div class="col">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://www.bokjinet.co.kr/wp-content/uploads/2023/10/%EC%98%81%EC%A2%85%EB%8C%80%EA%B5%90-%ED%86%B5%ED%96%89%EB%A3%8C-%EC%9D%B8%ED%95%98.webp">
+                  <div class="card-body">
+                      <p class="card-text text-center" style="font-size: large;"><b>인천</b></p>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- card 3 -->
+            <a style="text-decoration: none; color: black;" onclick="service(); openBtn('daejeon')">
+              <div class="col">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://img1.daumcdn.net/thumb/R658x0.q70/?fname=https://t1.daumcdn.net/news/202310/25/speaktravel/20231025205003513hbuj.png">
+                  <div class="card-body">
+                      <p class="card-text text-center" style="font-size: large;"><b>대전</b></p>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- card 4 -->
+            <a style="text-decoration: none; color: black;" onclick="service(); openBtn('daegu')">
+              <div class="col">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://image.여기유.com/content_travel/2020021412202315816504231362.jpg">
+                  <div class="card-body">
+                      <p class="card-text text-center" style="font-size: large;"><b>대구</b></p>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- card 5 -->
+            <a style="text-decoration: none; color: black;" onclick="service(); openBtn('gwangju')">
+              <div class="col">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://mblogthumb-phinf.pstatic.net/20160529_42/osgsb_1464525134207VPesj_JPEG/20160506102758_IMG_2168.JPG?type=w800">
+                  <div class="card-body">
+                      <p class="card-text text-center" style="font-size: large;"><b>광주</b></p>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- card 6 -->
+            <a style="text-decoration: none; color: black;" onclick="service(); openBtn('busan')">
+              <div class="col">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://www.visitbusan.net/uploadImgs/files/cntnts/20191229160530047_oen">
+                  <div class="card-body">
+                      <p class="card-text text-center" style="font-size: large;"><b>부산</b></p>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- card 7 -->
+            <a style="text-decoration: none; color: black;" onclick="service(); openBtn('ulsan')">
+              <div class="col">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://blog.kakaocdn.net/dn/buHs0g/btrD5RX38Vz/QSTCK3zqw0KWUn0nn3kjPk/img.jpg">
+                  <div class="card-body">
+                      <p class="card-text text-center" style="font-size: large;"><b>울산</b></p>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- card 8 -->
+            <a style="text-decoration: none; color: black;" onclick="service(); openBtn('gangwon')">
+              <div class="col">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://dimg04.c-ctrip.com/images/1mj7212000acoea9nD87E.png">
+                  <div class="card-body">
+                      <p class="card-text text-center" style="font-size: large;"><b>강원</b></p>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- card 9 -->
+            <a style="text-decoration: none; color: black;" onclick="service(); openBtn('jeju')">
+              <div class="col">
+                <div class="card shadow-sm">
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://here.busan.com/data/editor/2006/72c477f4e4e4991d84fe221a7f1697f8_1592960509_7093.png">
+                  <div class="card-body">
+                      <p class="card-text text-center" style="font-size: large;"><b>제주</b></p>
+                  </div>
+                </div>
+              </div>
+            </a>
+  
+            
+          </div>
+        </div>
+      </div>
+      
+      <!-- 모달 -->
+      <%@ page import="java.util.Date"%>
+	  <%@ page import="java.text.SimpleDateFormat"%>
+	  <%
+			Date nowTime = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+// 			String region = request.getParameter("region");
+	  %>
+      <div id="modalContainer" class="hidden">
+			<div id="modalContent">
+			    <p style="font-family: 'SUIT-Bold'; font-size: large; text-align: center;">여행 정보를 입력해주세요.</p><hr>
+<!-- 			    <form action="/app/travelUI?region=" method="post"> -->
+			    <form action="<c:url value="/travelUI" />" method="get">
+			    <input type="hidden" id="region" name="region" value="">
+				    <div class="div_title col-9">
+						<label class="title">여행 제목 : </label>
+						<input class="text" name="travelTitle" id="travelTitle">
+						<div class="calendar">
+							<label class="calendar_sdate">여행 시작일 : </label>
+							<input class="input-date" type="date" name="SDate" id="SDate" value="" min="<%= sdf.format(nowTime) %>">
+							<br><br>
+							<label class="calendar_edate">여행 종료일 : </label>
+							<input class="input-date" type="date" name="EDate" id="EDate" value="" min="<%= sdf.format(nowTime) %>">
+							<br><br>
+						</div>
+					</div>
+					<div id="btnList">
+					    <button id="modalCloseButton" class="btn btn-secondary" onclick="closeBtn()">닫기</button>
+					    <button id="saveBtn" class="btn btn-primary" onclick="save()">저장</button>
+					</div>
+			    </form>
+			</div>
+		</div>
+    
+ </main>
+<script>
+function save() {
+	if($('#travelTitle').val()==''){
+		event.preventDefault();
+		alert("여행 제목을 채워주세요 :)");
+		$('#travelTitle').focus();
+		return;
+	}
+	if($('#SDate').val() == '') {
+		event.preventDefault();
+		alert("여행 시작일을 입력해주세요.");
+		$('#SDate').focus();
+		return;
+	}
+	if($('#EDate').val() == '') {
+		event.preventDefault();
+		alert("여행  종료일을 입력해주세요.");
+		$('#EDate').focus();
+		return;
+	}
+	
+	// 종료일이 시작일 이전일 때
+	var sdd = document.getElementById("SDate").value;
+	var edd = document.getElementById("EDate").value;
+	console.log("sdd:", sdd);
+	console.log("edd:", edd);
+	var ar1 = sdd.split('-');
+	var ar2 = edd.split('-');
+	var da1 = new Date(ar1[0], ar1[1], ar1[2]);
+	var da2 = new Date(ar2[0], ar2[1], ar2[2]);
+	var dif = da2 - da1;
+	var cDay = 24 * 60 * 60 * 1000;
+	var days = parseInt(dif / cDay);
+	
+	if (days <= 0) {
+		event.preventDefault();
+		alert("여행 종료일이 시작일보다 이전입니다.");
+		$('#EDate').focus();
+	}
+	if (days >= 9) {
+		event.preventDefault();
+		alert("최대 9일까지만 생성 가능합니다.");
+	}
+	
+	$('#saveBtn').submit();
+}
+</script>
+<br>
+<br>
+<!-- ------------일정만들기 끝 --------------- -->
+<!-- ------------게시판 시작 ----------------- -->
+<h4 class="font" style="text-align:center">지금 많이 담고 있는 여담 <span class="text-primary">' Top 5 '</span>🚀</h4>
+
+<div style="text-align:center">
+  <div class="board-container">
+    <table>
+      <tr>
+        <th class="contentNum">번호</th>
+        <th class="title1">제목</th>
+        <th class="userID">이름</th>
+        <th class="views">조회수</th>
+        <th class="likeContent">좋아요</th>
+        <th class="boardDate">등록일</th>
+    </tr>
+      <c:forEach var="DTO" items="${list }">
+        <tr>
+          <td class="contentNum">${DTO.contentNum}</td>
+          <td class="title"><a href="BoardRetrieve?contentNum=${DTO.contentNum}">${DTO.title }</a></td>
+          <td class="userID">${DTO.userID }</td>
+          <td class="views">${DTO.views }</td>
+          <td class="likeContent">${DTO.likeContent }</td>
+          <td class="boardDate">${DTO.boardDate }</td>
+        </tr>
+      </c:forEach>
+    </table>
+    <br>
+  </div>
+</div> <!-- 게시판 끝 -->
 
 <!-- 카드 부분 : 추후에 좋아요 많은 best3 나오게끔 수정할 것  -->
+<h4 class="font" style="text-align:center">- 여담 추천 일정 -</h4>
+<br>
   <div class="container">
     <div class="card-group">
       <div class="card">
@@ -110,166 +523,6 @@
   </div>
 <br>
 <br>
-<br>
-<br>
-<h4 class="font" style="text-align:center">지금 많이 담고 있는 여담 <span class="text-primary">' Top 10 '</span>🚀</h4>
-<!-- 게시판  -->
-<div style="text-align:center">
-  <div class="board-container">
-    <table>
-      <tr>
-        <th class="no">번호</th>
-        <th class="title">제목</th>
-        <th class="writer">이름</th>
-        <th class="viewcnt">조회수</th>
-        <th class="viewcnt">좋아요</th>
-        <th class="regdate">등록일</th>
-    </tr>
-      <c:forEach var="boardDto" items="">
-        <tr>
-          <td class="contentNum">1</td>
-          <td class="title"><a href="#">오래 남을 2023 홀로 제주</a></td>
-          <td class="userID">이지은</td>
-          <td class="viewcnt">350</td>
-          <td class="likeContent">200</td>
-          <c:choose>
-            <c:when test="">
-              <td class="boardDate"><fmt:formatDate value="" pattern="HH:mm" type="time"/></td>
-            </c:when>
-            <c:otherwise>
-              <td class="boardDate"><fmt:formatDate value="" pattern="yyyy-MM-dd" type="date"/></td>
-            </c:otherwise>
-          </c:choose>
-        </tr>
-      </c:forEach>
-    </table>
-    <br>
-  </div>
-</div> <!-- 게시판 끝 -->
-
-<!-- 일정 만들기 카드  -->
- <div class="album py-5 bg-white">
-        <div class="container">
-          
-          <!-- 글 -->
-          <div class="py-5 text-center container col-lg-6 col-md-8 mx-auto">
-              <h3 class="fw-bold">어디로 떠나볼까요?</h3>
-          </div>
-
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3"> <!-- row-cols-**:작아지면 1개 좀 커지면 2개, 중간부터 5개씩 카드 위치함 / g:카드간 간격 -->
-            <!-- card 1 -->
-            <a href="/app/travelUI?region=seoul" style="text-decoration: none; color: black;">
-              <div class="col">
-                <div class="card shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://www.agoda.com/wp-content/uploads/2019/03/Seoul-attractions-Changdeokgung.jpg">
-                  <div class="card-body">
-                      <p class="card-text text-center" style="font-size: large;"><b>서울</b></p>
-                  </div>
-                </div>
-              </div>
-            </a>
-
-            <!-- card 2 -->
-            <a href="/app/travelUI?region=incheon" style="text-decoration: none; color: black;">
-              <div class="col">
-                <div class="card shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://www.bokjinet.co.kr/wp-content/uploads/2023/10/%EC%98%81%EC%A2%85%EB%8C%80%EA%B5%90-%ED%86%B5%ED%96%89%EB%A3%8C-%EC%9D%B8%ED%95%98.webp">
-                  <div class="card-body">
-                      <p class="card-text text-center" style="font-size: large;"><b>인천</b></p>
-                  </div>
-                </div>
-              </div>
-            </a>
-
-            <!-- card 3 -->
-            <a href="/app/travelUI?region=daejeon" style="text-decoration: none; color: black;">
-              <div class="col">
-                <div class="card shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://img1.daumcdn.net/thumb/R658x0.q70/?fname=https://t1.daumcdn.net/news/202310/25/speaktravel/20231025205003513hbuj.png">
-                  <div class="card-body">
-                      <p class="card-text text-center" style="font-size: large;"><b>대전</b></p>
-                  </div>
-                </div>
-              </div>
-            </a>
-
-            <!-- card 4 -->
-            <a href="/app/travelUI?region=daegu" style="text-decoration: none; color: black;">
-              <div class="col">
-                <div class="card shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://image.여기유.com/content_travel/2020021412202315816504231362.jpg">
-                  <div class="card-body">
-                      <p class="card-text text-center" style="font-size: large;"><b>대구</b></p>
-                  </div>
-                </div>
-              </div>
-            </a>
-
-            <!-- card 5 -->
-            <a href="/app/travelUI?region=gwangju" style="text-decoration: none; color: black;">
-              <div class="col">
-                <div class="card shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://mblogthumb-phinf.pstatic.net/20160529_42/osgsb_1464525134207VPesj_JPEG/20160506102758_IMG_2168.JPG?type=w800">
-                  <div class="card-body">
-                      <p class="card-text text-center" style="font-size: large;"><b>광주</b></p>
-                  </div>
-                </div>
-              </div>
-            </a>
-
-            <!-- card 6 -->
-            <a href="/app/travelUI?region=busan" style="text-decoration: none; color: black;">
-              <div class="col">
-                <div class="card shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://www.visitbusan.net/uploadImgs/files/cntnts/20191229160530047_oen">
-                  <div class="card-body">
-                      <p class="card-text text-center" style="font-size: large;"><b>부산</b></p>
-                  </div>
-                </div>
-              </div>
-            </a>
-
-            <!-- card 7 -->
-            <a href="/app/travelUI?region=ulsan" style="text-decoration: none; color: black;">
-              <div class="col">
-                <div class="card shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://blog.kakaocdn.net/dn/buHs0g/btrD5RX38Vz/QSTCK3zqw0KWUn0nn3kjPk/img.jpg">
-                  <div class="card-body">
-                      <p class="card-text text-center" style="font-size: large;"><b>울산</b></p>
-                  </div>
-                </div>
-              </div>
-            </a>
-
-            <!-- card 8 -->
-            <a href="/app/travelUI?region=gangwon" style="text-decoration: none; color: black;">
-              <div class="col">
-                <div class="card shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://dimg04.c-ctrip.com/images/1mj7212000acoea9nD87E.png">
-                  <div class="card-body">
-                      <p class="card-text text-center" style="font-size: large;"><b>강원</b></p>
-                  </div>
-                </div>
-              </div>
-            </a>
-
-            <!-- card 9 -->
-            <a href="/app/travelUI?region=jeju" style="text-decoration: none; color: black;">
-              <div class="col">
-                <div class="card shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" role="img" src="https://here.busan.com/data/editor/2006/72c477f4e4e4991d84fe221a7f1697f8_1592960509_7093.png">
-                  <div class="card-body">
-                      <p class="card-text text-center" style="font-size: large;"><b>제주</b></p>
-                  </div>
-                </div>
-              </div>
-            </a>
-  
-            
-          </div>
-        </div>
-      </div>
-<!-- 일정 만들기 끝 -->
 <!-- footer -->
 <footer>
   <div class="jumbotron text-center mt-5 mb-0">
