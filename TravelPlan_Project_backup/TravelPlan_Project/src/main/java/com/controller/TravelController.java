@@ -27,22 +27,23 @@ import com.dto.PlanDTO;
 import com.dto.TravelListDTO;
 import com.info.Info;
 import com.service.MakeTravelService;
-import com.service.TravelService;
 
 @Controller
 public class TravelController {
 	private Info info = new Info();
 	
 	@Autowired
-	TravelService service;
-	
-	@Autowired
 	MakeTravelService MTService;
 	
 	// 메인UI
-	@PostMapping("/travelUI")
+	@GetMapping("/travelUI")
 	public String travelUI(HttpSession session, @RequestParam HashMap<String, String> map) {
 		session.setAttribute("client_id", info.getKakaoMapId());
+		
+		// 이미 세션에 travelID가 저장되어 있는 경우
+		if((Integer)session.getAttribute("travelID") != null) {
+			session.removeAttribute("travelID"); // 해당 데이터 삭제
+		}
 		
 		// travel 테이블에 저장(일정 제목, 날짜, 위치 등등)
 		MemberDTO memberDTO = (MemberDTO)session.getAttribute("loginInfo");
@@ -59,7 +60,8 @@ public class TravelController {
 		}
 		
 		// 저장한 테이블 id 가져오기
-		int travelID = MTService.selectTravelId(travelListDTO);
+		List<Integer> travelIDList = MTService.selectTravelId(travelListDTO);
+		int travelID = travelIDList.get(travelIDList.size()-1); // 리스트의 마지막 요소 저장
 		
 		session.setAttribute("dto", travelListDTO);
 		session.setAttribute("travelID", travelID);
@@ -69,7 +71,12 @@ public class TravelController {
 	
 	// 일정 만들기
 	@GetMapping("/loginCheck/pickLocation")
-	public String pickLocation() {
+	public String pickLocation(HttpSession session) {
+		MemberDTO memberDTO = (MemberDTO)session.getAttribute("loginInfo");
+		String userID = memberDTO.getUserID();
+		
+		// save='n'인 travel 데이터 삭제
+		MTService.deleteTravelData(userID);
 		
 		return "pickLocation";
 	}
@@ -158,7 +165,7 @@ public class TravelController {
 		
 		ArrayList<PlanDTO> list = new ArrayList<PlanDTO>();
 		   
-		//------------------------------------------------------------ idx값 수정 필요 ------------------------------------------------------------//
+		// dto 생성, 리스트에 저장
 		for(int i=0;i<jsonArray.size();i++){
 			JSONObject ele = (JSONObject)jsonArray.get(i);
 			       
@@ -167,7 +174,11 @@ public class TravelController {
 //			System.out.println(ele.get("time_text"));
 //			System.out.println(ele.get("item_add"));
 //			System.out.println(Float.parseFloat((String)ele.get("mapx")));
-			PlanDTO dto = new PlanDTO(Integer.parseInt(travelID), Integer.parseInt((String)ele.get("day_num")), (String)ele.get("item"), (String)ele.get("item_add"), (String)ele.get("time_text"),Float.parseFloat((String)ele.get("mapx")), Float.parseFloat((String)ele.get("mapy")), 0);
+
+			PlanDTO dto = new PlanDTO( Integer.parseInt(travelID), Integer.parseInt((String)ele.get("day_num")), 
+									   (String)ele.get("item"), (String)ele.get("item_add"), (String)ele.get("time_text"),
+									   Float.parseFloat((String)ele.get("mapx")), Float.parseFloat((String)ele.get("mapy")), 
+									   Integer.parseInt(String.valueOf(ele.get("idx"))) );
 			if(dto!=null) {
 				list.add(dto);
 			}
@@ -178,6 +189,8 @@ public class TravelController {
 		
 		// 세부 일정 저장
 		MTService.saveSchedule(list);
+		
+		// 세부일정 저장 실패 알림 만들어야함
 	}
 	
 	// travelForm.jsp에서 저장 버튼 클릭시 일정 정보 변경사항 업데이트
@@ -200,6 +213,9 @@ public class TravelController {
 			return "travel/travelSaveFail";
 		}
 		
+		// save='n'인 travel 데이터 삭제
+		MTService.deleteTravelData(userID);
+		
 		session.removeAttribute("dto");
 		session.removeAttribute("travelID");
 		session.removeAttribute("client_id");
@@ -208,17 +224,24 @@ public class TravelController {
 	}
 	
 	// 일정 만들기 페이지에서 벗어날 경우 travel 테이블에 저장해놓은 데이터 삭제
-	@GetMapping("/dropPage")
-	@ResponseBody
-	public void dropPage(HttpSession session) {
+	@GetMapping("/loginCheck/dropPage")
+	public String dropPage(HttpSession session) {
 		
-		// travel 데이터 삭제
-		MTService.deleteTravelData((int)session.getAttribute("travelID"));
+		/*	삭제 데이터
+		  	- 유저아이디+save='n'인 모든 데이터 삭제	*/
+		
+		MemberDTO memberDTO = (MemberDTO)session.getAttribute("loginInfo");
+		String userID = memberDTO.getUserID();
+		
+		// save='n'인 travel 데이터 삭제
+		MTService.deleteTravelData(userID);
 		
 		// 세션 초기화
 		session.removeAttribute("dto");
 		session.removeAttribute("travelID");
 		session.removeAttribute("client_id");
+		
+		return "redirect:/main";
 	}
 	
 	// url로 받아온 region값 areaCode로 변경시키는 함수
@@ -254,4 +277,5 @@ public class TravelController {
 		
 		return areaCode;
 	}
+	
 }

@@ -4,7 +4,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -23,10 +28,10 @@ import com.dto.BoardDTO;
 import com.dto.CommentDTO;
 import com.dto.MemberDTO;
 import com.dto.PageDTO;
-import com.dto.SearchCondition;
+import com.dto.PlanDTO;
+import com.dto.TravelListDTO;
 import com.service.BoardServiceImpl;
 import com.service.MyPageServiceImpl;
-import com.service.SharedBoardService;
 
 @Controller
 public class BoardController {
@@ -43,26 +48,73 @@ public class BoardController {
 		List<CommentDTO> contentDto = service.selectCommentList(contentNum);
 		m.addAttribute("content", dto);//dto
 		m.addAttribute("comment", contentDto);//dto
+		
+		//여행일정 가져오기
+		HashMap<String, Object>map = new HashMap<>();
+		TravelListDTO TravelDto = service.findOneTravel(dto.getTravelID());
+		List<PlanDTO> PlanDtoList = service.findAllPlan(dto.getTravelID());
+		//map.put("content", dto);
+		//map.put("comment", contentDto);
+		map.put("travel", TravelDto);
+		map.put("PlanDtoList", PlanDtoList);
+		if(map!=null) {
+			m.addAllAttributes(map);
+		}
+		
+		
+		//어레이 리스트 안에 같은 day 끼리 묶인 리스트
+		//PlanDto 를 같은 dayNum 끼리 분류해서 append
+		List<List<PlanDTO>> PlanDto2dLists = new ArrayList<>(); 
+		
+		Set<Integer> IntSet = new LinkedHashSet<>();
+		for (PlanDTO dto1 : PlanDtoList ) {
+			IntSet.add( dto1.getDay_num() );
+		}
+		
+		for (int i = 0; i < IntSet.size(); i++) { //2차원 리스트 만들고
+			PlanDto2dLists.add(new ArrayList<>());
+		}   
+		
+		for (PlanDTO plan : PlanDtoList) {//거기다가 집어넣기
+			PlanDto2dLists.get(plan.getDay_num() - 1).add(plan);
+		} 
+		if(PlanDto2dLists!=null) {
+			m.addAllAttributes(PlanDto2dLists);
+		}
+		
+		
+		m.addAttribute("PlanDto2dLists", PlanDto2dLists);
+		m.addAttribute("day_num", IntSet);
+		//System.out.println(PlanDto2dList);
+		//System.out.println(PlanDto2dLists.get(0));
+		
+		
 		return "board/BoardRetrieve";
 		
 	
 	}
 	@GetMapping("/Board")
-	public String selectList(SearchCondition sc, HttpServletRequest request, Model m) { 
-		System.out.println(sc); 
+	public String selectList(HttpServletRequest request, Model m) { 
+		
 		String curPage = request.getParameter("curPage");
 		//int로 바꾸는게 더 나을수도 있음.
 		if(curPage == null) {
 			curPage = "1";
 		}
+		String searchName = request.getParameter("searchName");
+		String searchValue = request.getParameter("searchValue");
 		
-		PageDTO Dto = service.selectList(Integer.parseInt(curPage), sc);
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("searchName",searchName);
+		map.put("searchValue",searchValue);
+		
+		PageDTO Dto = service.selectList(map, Integer.parseInt(curPage));
 		//m.addAttribute("PageDTO", pageDTO);
 		
 		
 		//List<BoardDTO> Dto = service.selectList();
 		m.addAttribute("content", Dto);
-		m.addAttribute("sc", sc);
+		//m.addAttribute("sc", sc);
 		return "board/Board";
 	
 	}
@@ -178,7 +230,7 @@ public class BoardController {
 	}
 	
 	//내가 좋아요 한 게시판 처리
-	@GetMapping("/UlList")
+	@GetMapping("/loginCheck/UlList")
 	public String UlList(HttpServletRequest request, HttpSession session, Model m) {
 		MemberDTO loginInfo = (MemberDTO) session.getAttribute("loginInfo");//로그인 아이디 확인.
 		String curPage = request.getParameter("curPage");
